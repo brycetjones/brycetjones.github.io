@@ -4,11 +4,6 @@ import SubwayBackground from '../components/SubwayBackground'
 import SocialsModal from '../components/SocialsModal'
 import './Landing.css'
 
-/*
-  Arrow images live in /public:
-    /Right.svg  — used for RESUME (card 1) and PROJECTS (card 2)
-    /Down.svg   — used for CONNECT (card 3), flipped 90° via CSS transform
-*/
 const CARDS = [
   {
     label: 'RESUME',
@@ -41,6 +36,13 @@ const CARDS = [
 export default function Landing() {
   const [showSocials, setShowSocials] = useState(false)
 
+  // To swap in a real profile photo:
+  //   1. Place your image at public/profile.png (or .jpg, .webp)
+  //   2. Set USE_PHOTO = true
+  //   3. The <img> below will render instead of the initials placeholder
+  const USE_PHOTO = false
+  const PHOTO_SRC = '/profile.png'
+
   return (
     <div className="landing">
       <SubwayBackground />
@@ -51,9 +53,17 @@ export default function Landing() {
         {/* Profile */}
         <div className="profile-block">
           <div className="profile-photo-wrap">
-            <div className="profile-photo-placeholder">
-              <span>TN</span>
-            </div>
+            {USE_PHOTO ? (
+              <img
+                src={PHOTO_SRC}
+                alt="Profile photo"
+                className="profile-photo-img"
+              />
+            ) : (
+              <div className="profile-photo-placeholder">
+                <span>TN</span>
+              </div>
+            )}
             <div className="profile-photo-ring ring-inner"></div>
             <div className="profile-photo-ring ring-outer"></div>
           </div>
@@ -86,7 +96,8 @@ export default function Landing() {
                   <img
                     src={card.arrowSrc}
                     alt=""
-                    className={card.arrowClass}
+                    className="arrow-img"
+                    style={card.arrowStyle}
                     aria-hidden="true"
                   />
                   <div className="sign-text">

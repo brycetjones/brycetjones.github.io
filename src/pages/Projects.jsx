@@ -1,58 +1,20 @@
 import { useState, useRef, useEffect } from 'react'
 import NavBar from '../components/NavBar'
 import SubwayBackground from '../components/SubwayBackground'
+import PROJECTS from '../data/projects.json'
 import './Projects.css'
 
-const PROJECTS = [
-  {
-    id: 1,
-    name: 'Bus Network Redesign — Atlanta',
-    tags: ['Transit Planning', 'GIS', 'Equity Analysis'],
-    color: '#E3001B',
-    thumbnail: null,
-    thumbnailType: 'placeholder',
-    description: `A comprehensive redesign of the Atlanta Metro bus network aimed at improving frequency, coverage, and equity across underserved corridors. Using GTFS data and ridership modeling, we identified 14 underperforming routes and proposed a restructured network that increases access to jobs within 45 minutes by 22% for low-income households.\n\nThe project involved extensive community engagement across 8 neighborhoods, GIS-based accessibility mapping, and cost-benefit analysis across three investment scenarios. Final recommendations were presented to MARTA's planning board and are currently under review for the 2026 capital budget.`,
-  },
-  {
-    id: 2,
-    name: 'Automated Bus Stop Inventory',
-    tags: ['Machine Learning', 'GTFS', 'Computer Vision', 'Python'],
-    color: '#00A651',
-    thumbnail: null,
-    thumbnailType: 'youtube',
-    youtubeId: '4SQ5h8Bhpro',
-    description: `Most transit agencies lack a comprehensive inventory of which amenities are present at their bus stops (shelters, seating, etc.) On top of this, the bus stop coordinates provided by transit agencies are often erroneous. I developed a system that uses reinforcement learning to actively seek out bus stops through street view imagery, compensating for unreliable coordinate data. Once it has located a stop, the system uses computer vision to automatically determine which amenities are present. It even locates multiple viewpoints of stops, enabling more accurate coordinates to be estimated through triangulation.`,
-  },
-  {
-    id: 4,
-    name: 'Bike-Share Equity Dashboard',
-    tags: ['Data Visualization', 'Python', 'Urban Mobility'],
-    color: '#0065BD',
-    thumbnail: null,
-    thumbnailType: 'placeholder',
-    description: `An interactive web dashboard built with Python and Dash that tracks equity metrics across a city bike-share system. The tool ingests real-time trip data and overlays census demographic information to surface disparities in station placement, rebalancing frequency, and membership penetration by income quintile.\n\nPresented at the 2024 Transportation Research Board Annual Meeting. The methodology has since been adopted by two mid-sized cities for their own equity assessments. Open-source code available on GitHub.`,
-  },
-  {
-    id: 3,
-    name: 'High-Speed Rail Corridor Study',
-    tags: ['Rail Planning', 'Policy', 'Environmental Review'],
-    color: '#D4861A',
-    thumbnail: null,
-    thumbnailType: 'pdf',
-    thumbnailPdf: '/sample-project.pdf',
-    description: `A feasibility study evaluating three alignment alternatives for a proposed high-speed rail corridor connecting two major metropolitan regions. The study encompassed ridership demand modeling, environmental impact screening, ROW cost estimation, and interoperability analysis with existing commuter rail systems.\n\nDelivered as part of a federal planning grant. The preferred alternative was selected based on a weighted multi-criteria analysis balancing capital cost, travel time savings, environmental impacts, and economic development potential.`,
-  },
-]
-
+// ─── TAG PILL ───────────────────────────────────────────────
 function TagPill({ label, color }) {
   return (
-    <span className="tag-pill" style={{ borderColor: color, color: color }}>
+    <span className="tag-pill" style={{ borderColor: color, color }}>
       {label}
     </span>
   )
 }
 
-function PdfThumbnail({ src }) {
+// ─── PDF RENDERER ───────────────────────────────────────────
+function PdfMedia({ src }) {
   const canvasRef = useRef(null)
   const [loaded, setLoaded] = useState(false)
 
@@ -67,7 +29,7 @@ function PdfThumbnail({ src }) {
         ).toString()
         const pdf = await pdfjsLib.getDocument(src).promise
         const page = await pdf.getPage(1)
-        const viewport = page.getViewport({ scale: 0.5 })
+        const viewport = page.getViewport({ scale: 1.2 })
         const canvas = canvasRef.current
         if (!canvas || cancelled) return
         canvas.width = viewport.width
@@ -75,7 +37,7 @@ function PdfThumbnail({ src }) {
         await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise
         if (!cancelled) setLoaded(true)
       } catch (e) {
-        console.warn('PDF thumbnail failed:', e)
+        console.warn('PDF render failed:', e)
       }
     }
     render()
@@ -83,29 +45,76 @@ function PdfThumbnail({ src }) {
   }, [src])
 
   return (
-    <div className="thumb-pdf-wrap">
-      <canvas ref={canvasRef} className={`thumb-pdf-canvas ${loaded ? 'visible' : ''}`} />
-      {!loaded && <div className="thumb-placeholder pdf-placeholder"><span>PDF</span></div>}
+    <div className="media-pdf-wrap">
+      <canvas ref={canvasRef} className={`media-pdf-canvas ${loaded ? 'visible' : ''}`} />
+      {!loaded && <div className="media-placeholder"><span>PDF</span></div>}
     </div>
   )
 }
 
-function Thumbnail({ project, expanded }) {
-  if (project.thumbnailType === 'youtube') {
+// ─── SINGLE MEDIA ITEM ──────────────────────────────────────
+function MediaItem({ item, color, name }) {
+  if (item.type === 'youtube') {
     return (
-      <div className={`thumb-youtube-wrap ${expanded ? 'expanded' : ''}`}>
+      <div className="media-youtube-wrap">
         <iframe
-          className="thumb-youtube"
-          src={`https://www.youtube.com/embed/${project.youtubeId}`}
-          title={project.name}
+          className="media-youtube"
+          src={`https://www.youtube.com/embed/${item.youtubeId}`}
+          title={name}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
       </div>
     )
   }
-  if (project.thumbnailType === 'pdf' && project.thumbnailPdf) {
-    return <PdfThumbnail src={project.thumbnailPdf} />
+  if (item.type === 'image') {
+    return (
+      <div className="media-image-wrap">
+        <img src={item.src} alt={item.caption || name} className="media-image" />
+      </div>
+    )
+  }
+  if (item.type === 'pdf') {
+    return <PdfMedia src={item.src} />
+  }
+  // placeholder
+  return (
+    <div className="media-placeholder" style={{ background: color + '18', borderColor: color }}>
+      <span style={{ color }}>{name.charAt(0)}</span>
+    </div>
+  )
+}
+
+// ─── THUMBNAIL (preview size, first media item only) ────────
+function Thumbnail({ project }) {
+  const first = project.media?.[0]
+  if (!first) return (
+    <div className="thumb-placeholder" style={{ background: project.color + '22', borderColor: project.color }}>
+      <span style={{ color: project.color }}>{project.name.charAt(0)}</span>
+    </div>
+  )
+
+  if (first.type === 'youtube') {
+    return (
+      <div className="thumb-youtube-wrap">
+        <img
+          src={`https://img.youtube.com/vi/${first.youtubeId}/mqdefault.jpg`}
+          alt="Video thumbnail"
+          className="thumb-img"
+        />
+        <div className="thumb-play-badge">▶</div>
+      </div>
+    )
+  }
+  if (first.type === 'image') {
+    return <img src={first.src} alt={first.caption || project.name} className="thumb-img" />
+  }
+  if (first.type === 'pdf') {
+    return (
+      <div className="thumb-placeholder pdf-placeholder">
+        <span>PDF</span>
+      </div>
+    )
   }
   return (
     <div className="thumb-placeholder" style={{ background: project.color + '22', borderColor: project.color }}>
@@ -114,6 +123,67 @@ function Thumbnail({ project, expanded }) {
   )
 }
 
+// ─── CAROUSEL ───────────────────────────────────────────────
+function Carousel({ project }) {
+  const media = project.media || []
+  const [idx, setIdx] = useState(0)
+
+  if (media.length === 0) return null
+
+  const prev = () => setIdx(i => (i - 1 + media.length) % media.length)
+  const next = () => setIdx(i => (i + 1) % media.length)
+  const current = media[idx]
+
+  return (
+    <div className="carousel">
+      <div className="carousel-media">
+        <MediaItem item={current} color={project.color} name={project.name} />
+      </div>
+
+      {/* Caption */}
+      {current.caption && (
+        <p className="carousel-caption">{current.caption}</p>
+      )}
+
+      {/* Controls — only show if more than one item */}
+      {media.length > 1 && (
+        <div className="carousel-controls">
+          <button
+            className="carousel-btn carousel-btn-prev"
+            onClick={prev}
+            aria-label="Previous"
+            style={{ '--btn-color': project.color }}
+          >
+            <img src="/Right.svg" alt="Previous" className="carousel-arrow-img carousel-arrow-flip" />
+          </button>
+
+          <div className="carousel-dots">
+            {media.map((_, i) => (
+              <button
+                key={i}
+                className={`carousel-dot ${i === idx ? 'active' : ''}`}
+                style={{ '--dot-color': project.color }}
+                onClick={() => setIdx(i)}
+                aria-label={`Go to item ${i + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            className="carousel-btn carousel-btn-next"
+            onClick={next}
+            aria-label="Next"
+            style={{ '--btn-color': project.color }}
+          >
+            <img src="/Right.svg" alt="Next" className="carousel-arrow-img" />
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── PROJECT CARD ───────────────────────────────────────────
 function ProjectCard({ project }) {
   const [expanded, setExpanded] = useState(false)
   const bodyRef = useRef(null)
@@ -123,16 +193,15 @@ function ProjectCard({ project }) {
       className={`project-card ${expanded ? 'expanded' : ''}`}
       style={{ '--card-accent': project.color }}
     >
-      {/* ── PREVIEW ROW (always visible) ── */}
+      {/* Preview row */}
       <button
         className="project-preview"
         onClick={() => setExpanded(e => !e)}
         aria-expanded={expanded}
       >
         <div className="preview-thumb">
-          <Thumbnail project={project} expanded={false} />
+          <Thumbnail project={project} />
         </div>
-
         <div className="preview-info">
           <div className="preview-top">
             <span className="preview-line-dot" style={{ background: project.color }}></span>
@@ -150,18 +219,18 @@ function ProjectCard({ project }) {
         </div>
       </button>
 
-      {/* ── EXPANDED BODY ── */}
+      {/* Expanded body */}
       <div
         ref={bodyRef}
         className="project-expanded-body"
         style={{
-          maxHeight: expanded ? (bodyRef.current ? bodyRef.current.scrollHeight + 'px' : '1000px') : '0px',
+          maxHeight: expanded
+            ? (bodyRef.current ? bodyRef.current.scrollHeight + 'px' : '1200px')
+            : '0px',
         }}
       >
         <div className="expanded-inner">
-          <div className="expanded-media">
-            <Thumbnail project={project} expanded={true} />
-          </div>
+          <Carousel project={project} />
           <div className="expanded-text">
             {project.description.split('\n\n').map((para, i) => (
               <p key={i}>{para}</p>
@@ -173,6 +242,7 @@ function ProjectCard({ project }) {
   )
 }
 
+// ─── PAGE ───────────────────────────────────────────────────
 export default function Projects() {
   return (
     <div className="page-wrap">
@@ -186,7 +256,6 @@ export default function Projects() {
           </div>
           <h1>PROJECTS</h1>
         </div>
-
         <div className="projects-list">
           {PROJECTS.map(p => <ProjectCard key={p.id} project={p} />)}
         </div>

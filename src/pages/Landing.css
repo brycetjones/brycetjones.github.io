@@ -60,6 +60,17 @@
   z-index: 2;
 }
 
+.profile-photo-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+
 .profile-photo-ring {
   position: absolute;
   border-radius: 50%;
@@ -168,6 +179,7 @@
 .sign-card-body {
   display: flex;
   align-items: center;
+  min-height: 72px;
   gap: 14px;
   padding: 1.4rem 1.2rem 1rem;
   flex: 1;
@@ -191,6 +203,7 @@
   display: flex;
   flex-direction: column;
   gap: 3px;
+  justify-content: center;
 }
 
 .sign-label {
