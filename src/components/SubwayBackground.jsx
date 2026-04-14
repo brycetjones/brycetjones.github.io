@@ -5,196 +5,158 @@ import './SubwayBackground.css'
   COORDINATE SYSTEM
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   viewBox="0 0 800 1100": (0,0)=top-left, X→right, Y↓down.
-  M x,y  = move to start
-  L x,y  = straight line to (x,y)
-  Q cx,cy x,y = quadratic bezier, bends toward (cx,cy), ends at (x,y)
+  M x,y        — move to start
+  L x,y        — straight line
+  Q cx,cy x,y  — quadratic bezier: bends toward (cx,cy), ends at (x,y)
+
+  All curves are axis-aligned 90° turns. A turn is defined by a corner
+  point (kx,ky). The radius r is the distance from the preceding L
+  endpoint to the corner along the incoming axis.
 
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  HOW PARALLEL OFFSET WORKS (and why previous version broke)
+  PARALLEL OFFSET — exact formula
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  All our curves are axis-aligned 90° turns. A turn is described
-  by a corner point (kx,ky) and a radius r. The SVG for it is:
-    L  (kx - r*inDx),  (ky - r*inDy)       ← stop r before the corner
-    Q  kx, ky                               ← control point = exact corner
-       (kx + r*outDx), (ky + r*outDy)       ← end point = r past the corner
+  For a track offset by d (positive = left of travel direction):
 
-  For a PARALLEL track offset by d perpendicular to travel:
-  - On straight segments: shift the endpoint laterally by d (perpendicular to travel)
-  - On a curve:
-      * The corner point shifts DIAGONALLY outward by d*sqrt(2) along the
-        bisector direction (45° between incoming and outgoing perpendiculars)
-      * The radius changes: outer track r+d, inner track r-d
-      * This keeps the track exactly d apart at every point
+  STRAIGHTS: shift endpoint by d in the perpendicular-left direction.
+    perpLeft of (dx,dy) = (-dy, dx)
 
-  The bisector diagonal shift must be exactly d*sqrt(2) — NOT d*1 — because
-  the corner moves diagonally. If you only shift by d, the track spacing is
-  wrong by a factor of sqrt(2) at corners (this was the previous bug causing
-  lines to split: the corner was under-shifted so inner tracks all converged
-  to the same corner point).
+  CURVES: the offset QBezier must remain tangent-continuous with
+  adjacent straights. For a 90° turn the ONLY control point that
+  satisfies both tangent constraints is:
 
-  The perpendicular direction is always 90° CCW from travel direction:
-    traveling right (+x,0) → perp = (0,-1) = upward
-    traveling down  (0,+y) → perp = (+1,0) = rightward
-    traveling left  (-x,0) → perp = (0,+1) = downward
-    traveling up    (0,-y) → perp = (-1,0) = leftward
+    C' = (corner.x + d*perpIn.x + d*perpOut.x,
+          corner.y + d*perpIn.y + d*perpOut.y)
 
-  We store only the centerline (d=0). Positive d offsets to the left of travel,
-  negative d offsets to the right. We generate N tracks symmetrically.
+  where perpIn = perpLeft of incoming direction
+        perpOut = perpLeft of outgoing direction
+
+  This is (perpIn + perpOut)*d added to the corner — NOT normalized.
+  The new radius is simply:  r' = r + d * sign
+  where sign = +1 if d is toward the outside of the curve, -1 if inside.
+
+  We determine inside/outside by checking whether perpIn points toward
+  or away from the corner: if dot(perpIn, corner - prevPoint) > 0,
+  perpIn points toward the corner = d moves INWARD → r' = r - d.
+
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 
-const N_TRACKS  = 4     // number of parallel tracks per color
-const GAP       = 14    // px between track centerlines
-const THICKNESS = 10    // px stroke width of each colored line
-const STRIPE    = 3     // px width of white center stripe
+const N_TRACKS  = 2   // number of parallel tracks per color
+const GAP       = 16  // px between track centerlines
+const THICKNESS = 15  // px stroke width of each colored line
+const STRIPE    = 1   // px width of white center stripe
 
-// Rotate a unit vector 90° counter-clockwise: (dx,dy) → (-dy,dx)
-function perp(dx, dy) { return { x: -dy, y: dx } }
+// perpendicular-left of travel direction (rotate CCW 90°)
+function perpLeft(dx, dy) { return { x: -dy, y: dx } }
 
-/*
-  buildPath(segments, d)
-  ──────────────────────
-  segments: array of { type:'M'|'L'|'Q', x, y, kx, ky }
-    M: start point  { type:'M', x, y }
-    L: line to      { type:'L', x, y }  (these are the RAW centerline endpoints)
-    Q: 90° turn at corner (kx,ky)  { type:'Q', kx, ky }
-       The L before Q is the segment that LEADS INTO the curve.
-       The L after Q is the segment that LEAVES the curve.
-       The radius r is derived from the distance from the pre-curve L to the corner.
-
-  d: lateral offset from centerline (positive = left of travel, negative = right)
-
-  Returns an SVG path string for one track.
-*/
 function buildPath(segments, d) {
-  // Pre-compute travel direction for every segment.
-  // We need to know direction at each L endpoint to compute perp offset.
-  // Direction at a point = direction of the segment leaving that point.
-  // For the final point, use the direction of the arriving segment.
-
-  // Build a list of "resolved nodes" with position and travel context
-  const nodes = []
+  // Resolve all Q nodes first (they need to look at adjacent L nodes)
+  const resolved = []
 
   for (let i = 0; i < segments.length; i++) {
     const s = segments[i]
+
     if (s.type === 'M' || s.type === 'L') {
-      // Find travel direction leaving this point
-      // = direction to next non-Q segment (or direction of next Q's corner)
-      let travDx = 0, travDy = 0
-      for (let j = i + 1; j < segments.length; j++) {
-        const nxt = segments[j]
-        if (nxt.type === 'Q') {
-          travDx = Math.sign(nxt.kx - s.x)
-          travDy = Math.sign(nxt.ky - s.y)
-          break
-        }
-        if (nxt.type === 'L' || nxt.type === 'M') {
-          travDx = Math.sign(nxt.x - s.x)
-          travDy = Math.sign(nxt.y - s.y)
-          break
-        }
-      }
-      // If no next segment, use direction from previous
-      if (travDx === 0 && travDy === 0 && i > 0) {
-        const prev = nodes[nodes.length - 1]
-        if (prev) { travDx = prev.travDx; travDy = prev.travDy }
-      }
-      const p = perp(travDx, travDy)
-      nodes.push({ type: s.type, x: s.x, y: s.y, travDx, travDy, perpX: p.x, perpY: p.y })
-    } else if (s.type === 'Q') {
-      const prevSeg = segments[i - 1]  // L before Q
-      const nextSeg = segments[i + 1]  // L after Q
+      resolved.push({ ...s })
+      continue
+    }
 
-      const inDx = Math.sign(s.kx - prevSeg.x)
-      const inDy = Math.sign(s.ky - prevSeg.y)
-      const outDx = Math.sign(nextSeg.x - s.kx)
-      const outDy = Math.sign(nextSeg.y - s.ky)
+    if (s.type === 'Q') {
+      const prev = segments[i - 1]  // L before Q
+      const next = segments[i + 1]  // L after Q
 
-      // Radius = distance from pre-curve point to corner along incoming axis
-      const r = Math.abs(inDx !== 0 ? s.kx - prevSeg.x : s.ky - prevSeg.y)
+      // Incoming and outgoing unit directions
+      const inDx  = Math.sign(s.kx - prev.x)
+      const inDy  = Math.sign(s.ky - prev.y)
+      const outDx = Math.sign(next.x - s.kx)
+      const outDy = Math.sign(next.y - s.ky)
 
-      // Perpendicular to incoming and outgoing directions
-      const pIn  = perp(inDx, inDy)   // left of incoming travel
-      const pOut = perp(outDx, outDy) // left of outgoing travel
+      // Perpendicular-left of each direction
+      const pIn  = perpLeft(inDx, inDy)
+      const pOut = perpLeft(outDx, outDy)
 
-      // Bisector: average of the two perpendiculars, then normalize
-      // For a 90° turn the bisector is always at 45°, magnitude = sqrt(2)/2 each component
-      // so pIn + pOut has magnitude sqrt(2), and normalized = (pIn+pOut)/sqrt(2)
-      // Corner offset = d * sqrt(2) * normalized = d * (pIn + pOut) / sqrt(2) * sqrt(2) = d*(pIn+pOut)
-      // Wait — let's be precise:
-      //   pIn and pOut are unit vectors at 90° to each other (for a 90° turn)
-      //   |pIn + pOut| = sqrt(2)
-      //   bisector unit = (pIn + pOut) / sqrt(2)
-      //   corner shift = d / sin(45°) = d * sqrt(2)  [because the offset d is measured perpendicular
-      //                                                to travel, but the corner moves diagonally]
-      //   So corner shift vector = d*sqrt(2) * bisector_unit = d*sqrt(2) * (pIn+pOut)/sqrt(2) = d*(pIn+pOut)
-      const cornerShiftX = d * (pIn.x + pOut.x)
-      const cornerShiftY = d * (pIn.y + pOut.y)
+      // Corner of offset curve:
+      // C' = corner + d*(perpIn + perpOut)  — NOT normalized
+      const ckx = s.kx + d * (pIn.x + pOut.x)
+      const cky = s.ky + d * (pIn.y + pOut.y)
 
-      // Determine if offset d is toward the inside or outside of this curve.
-      // Inside of curve = direction the curve bends toward.
-      // The curve bends toward the corner from the perspective of the centerline,
-      // i.e., the corner is at (prevSeg + inDir * r), so "inward" = inDir direction.
-      // If pIn points in same direction as inDir, d moves inward → radius shrinks.
-      const inwardDot = pIn.x * inDx + pIn.y * inDy
-      // inwardDot > 0: pIn is toward inside → r decreases as d increases
-      // inwardDot < 0: pIn is toward outside → r increases as d increases
-      const newR = r - inwardDot * d
+      // Radius of centerline curve
+      const r = Math.abs(inDx !== 0 ? s.kx - prev.x : s.ky - prev.y)
 
-      nodes.push({
-        type: 'Q',
-        kx: s.kx + cornerShiftX,
-        ky: s.ky + cornerShiftY,
-        r: newR,
-        inDx, inDy, outDx, outDy,
-        pIn, pOut,
-      })
+      // Determine if d moves toward inside or outside of this curve.
+      // The inside of the curve is in the inDx/inDy direction from the corner
+      // (the corner is in front of the incoming travel, so the curve interior
+      //  is toward the incoming direction from the corner? No — let's think:
+      //  for down→right, corner=(kx,ky), incoming comes from above (ky-r).
+      //  The center of curvature is AT the corner. The inside of the arc is
+      //  toward the corner. perpIn for downward travel = (-1,0) = leftward.
+      //  dot(perpIn, corner - prevPoint) = dot((-1,0), (0, r)) = 0.
+      //  That doesn't work for this case. Use outgoing instead:
+      //  dot(perpIn, outDir) > 0 means perpIn and outDir agree → inside.
+      const dotInOut = pIn.x * outDx + pIn.y * outDy
+      // If dotInOut > 0: perpIn points in outgoing direction = toward inside of curve
+      //   → d moves inward → r' = r - d
+      // If dotInOut < 0: perpIn points away from inside → r' = r + d
+      const newR = r + (dotInOut > 0 ? -d : d)
+
+      resolved.push({ type: 'Q', ckx, cky, newR, inDx, inDy, outDx, outDy, pIn, pOut })
+      continue
     }
   }
 
-  // Now build the path string
+  // Build path string
   let path = ''
 
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i]
+  for (let i = 0; i < resolved.length; i++) {
+    const n = resolved[i]
 
     if (n.type === 'M') {
-      // Check if first move is into a Q
-      const nextNode = nodes[i + 1]
-      if (nextNode && nextNode.type === 'Q') {
-        // Start point = Q.corner - Q.r * inDir (offset already in Q)
-        const q = nextNode
-        path += `M ${q.kx - q.r * q.inDx},${q.ky - q.r * q.inDy} `
-      } else {
-        path += `M ${n.x + n.perpX * d},${n.y + n.perpY * d} `
+      // Offset perpendicular to the direction of the first movement
+      let tDx = 0, tDy = 0
+      for (let j = i + 1; j < resolved.length; j++) {
+        if (resolved[j].type === 'Q') {
+          tDx = resolved[j].inDx; tDy = resolved[j].inDy; break
+        }
+        if (resolved[j].type === 'L') {
+          tDx = Math.sign(resolved[j].x - n.x)
+          tDy = Math.sign(resolved[j].y - n.y)
+          break
+        }
       }
+      const p = perpLeft(tDx, tDy)
+      path += `M ${n.x + p.x * d},${n.y + p.y * d} `
     }
 
     else if (n.type === 'L') {
-      const prevNode = nodes[i - 1]
-      const nextNode = nodes[i + 1]
+      const prev = resolved[i - 1]
+      const next = resolved[i + 1]
 
-      if (nextNode && nextNode.type === 'Q') {
-        // This L leads into a curve — its endpoint is the curve's start
-        const q = nextNode
-        const ex = q.kx - q.r * q.inDx
-        const ey = q.ky - q.r * q.inDy
+      if (next && next.type === 'Q') {
+        // Endpoint overridden by curve start: corner - newR * inDir
+        const ex = next.ckx - next.newR * next.inDx
+        const ey = next.cky - next.newR * next.inDy
         path += `L ${ex},${ey} `
-      } else if (prevNode && prevNode.type === 'Q') {
-        // This L comes out of a curve — its start is the curve's end (emitted by Q)
-        // Its own endpoint uses the outgoing perpendicular from the Q
-        path += `L ${n.x + prevNode.pOut.x * d},${n.y + prevNode.pOut.y * d} `
+      } else if (prev && prev.type === 'Q') {
+        // Start already set by previous Q's end point.
+        // Endpoint: offset by d using outgoing perpendicular of that Q
+        path += `L ${n.x + prev.pOut.x * d},${n.y + prev.pOut.y * d} `
       } else {
-        // Plain straight segment
-        path += `L ${n.x + n.perpX * d},${n.y + n.perpY * d} `
+        // Plain straight: determine travel direction and offset
+        let tDx, tDy
+        if (prev) { tDx = Math.sign(n.x - prev.x); tDy = Math.sign(n.y - prev.y) }
+        else      { tDx = Math.sign(resolved[i+1].x - n.x); tDy = Math.sign(resolved[i+1].y - n.y) }
+        const p = perpLeft(tDx, tDy)
+        path += `L ${n.x + p.x * d},${n.y + p.y * d} `
       }
     }
 
     else if (n.type === 'Q') {
-      // Emit: Q corner  outEnd
-      const ex = n.kx + n.r * n.outDx
-      const ey = n.ky + n.r * n.outDy
-      path += `Q ${n.kx},${n.ky} ${ex},${ey} `
+      // Emit: Q corner'  end'
+      // end' = corner' + newR * outDir
+      const ex = n.ckx + n.newR * n.outDx
+      const ey = n.cky + n.newR * n.outDy
+      path += `Q ${n.ckx},${n.cky} ${ex},${ey} `
     }
   }
 
@@ -205,17 +167,15 @@ function buildTracks(segments) {
   const tracks = []
   const half = (N_TRACKS - 1) / 2
   for (let i = 0; i < N_TRACKS; i++) {
-    const d = (i - half) * GAP
-    tracks.push(buildPath(segments, d))
+    tracks.push(buildPath(segments, (i - half) * GAP))
   }
   return tracks
 }
 
 // ─── LINE DEFINITIONS ───────────────────────────────────────
-// Only define the centerline. Parallel tracks are generated automatically.
-// Q segments: { type:'Q', kx, ky } — the exact corner point of the turn.
-// The radius is computed from the distance between the preceding L and the corner.
-// Make the corner radius larger (move Q further from preceding L) for wider turns.
+// Only define the centerline. All tracks generated automatically.
+// { type:'Q', kx, ky } = corner of a 90° turn.
+// Radius = distance from preceding L point to corner along incoming axis.
 
 const redSegments = [
   { type: 'M', x: 310, y: 0 },
@@ -282,8 +242,8 @@ function LineBundle({ segments, color, animClass }) {
     <g className={animClass}>
       {tracks.map((d, i) => (
         <g key={i}>
-          <path d={d} fill="none" stroke={color}     strokeWidth={THICKNESS} strokeLinecap="butt" strokeLinejoin="round" />
-          <path d={d} fill="none" stroke="#ffffff"   strokeWidth={STRIPE}    strokeLinecap="butt" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke={color}   strokeWidth={THICKNESS} strokeLinecap="butt" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke="#f1e9d4" strokeWidth={STRIPE}    strokeLinecap="butt" strokeLinejoin="round" />
         </g>
       ))}
     </g>

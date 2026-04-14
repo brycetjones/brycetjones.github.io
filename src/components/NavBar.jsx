@@ -18,7 +18,7 @@ export default function NavBar() {
           <span className="brand-bullet" style={{ background: '#0065BD' }}></span>
           <span className="brand-bullet" style={{ background: '#D4861A' }}></span>
           <span className="brand-bullet" style={{ background: '#00A651' }}></span>
-          <span className="brand-name">TN</span>
+          <span className="brand-name">BTJ</span>
         </div>
         <div className="navbar-links">
           {LINES.map(({ label, path, color }) => (

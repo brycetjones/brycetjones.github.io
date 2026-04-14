@@ -2,9 +2,9 @@
   {
     "id": 1,
     "name": "Tokyo Neighborhood Traffic Simulation",
-    "tags": ["Transit Planning", "GIS", "Equity Analysis"],
+    "tags": ["Network Modeling", "Python", "Visualization"],
     "color": "#E3001B",
-    "description": "A comprehensive redesign of the Atlanta Metro bus network aimed at improving frequency, coverage, and equity across underserved corridors. Using GTFS data and ridership modeling, we identified 14 underperforming routes and proposed a restructured network that increases access to jobs within 45 minutes by 22% for low-income households.\n\nThe project involved extensive community engagement across 8 neighborhoods, GIS-based accessibility mapping, and cost-benefit analysis across three investment scenarios. Final recommendations were presented to MARTA's planning board and are currently under review for the 2026 capital budget.",
+    "description": "As part of a studio with the municipal government of Chiyoda Ward, Tokyo, I proposed several network ",
     "media": [
       {
         "type": "placeholder",
