@@ -36,11 +36,7 @@ const CARDS = [
 export default function Landing() {
   const [showSocials, setShowSocials] = useState(false)
 
-  // To swap in a real profile photo:
-  //   1. Place your image at public/profile.png (or .jpg, .webp)
-  //   2. Set USE_PHOTO = true
-  //   3. The <img> below will render instead of the initials placeholder
-  const USE_PHOTO = false
+  const USE_PHOTO = true
   const PHOTO_SRC = '/profile.png'
 
   return (
