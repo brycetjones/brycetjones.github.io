@@ -21,7 +21,7 @@ const PROJECTS = [
     thumbnail: null,
     thumbnailType: 'youtube',
     youtubeId: '4SQ5h8Bhpro',
-    description: `Most transit agencies lack a comprehensive inventory of which amenities are present at their bus stops (shelters, seating, etc.) On top of this, the bus stop coordinates provided by transit agencies are often erroneous. I developed a system that uses reinforcement learning to actively seek out bus stops through street view imagery, compensating for unreliable coordinate data. Once it has located a stop, the system uses computer vision to automatically determine which amenities are present at the targeted stop. It even locates multiple viewpoints of stops, enabling more accurate coordinates to be estimated through triangulation.`,
+    description: `Most transit agencies lack a comprehensive inventory of which amenities are present at their bus stops (shelters, seating, etc.) On top of this, the bus stop coordinates provided by transit agencies are often erroneous. I developed a system that uses reinforcement learning to actively seek out bus stops through street view imagery, compensating for unreliable coordinate data. Once it has located a stop, the system uses computer vision to automatically determine which amenities are present. It even locates multiple viewpoints of stops, enabling more accurate coordinates to be estimated through triangulation.`,
   },
   {
     id: 4,

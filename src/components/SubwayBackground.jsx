@@ -296,7 +296,7 @@ function LineBundle({ segments, color, animClass }) {
       {tracks.map((d, i) => (
         <g key={i}>
           <path d={d} fill="none" stroke={color}   strokeWidth="10" strokeLinecap="butt" strokeLinejoin="round" />
-          <path d={d} fill="none" stroke="#ffffff" strokeWidth="3"  strokeLinecap="butt" strokeLinejoin="round" />
+          <path d={d} fill="none" stroke="#f1e9d4" strokeWidth="3"  strokeLinecap="butt" strokeLinejoin="round" />
         </g>
       ))}
     </g>

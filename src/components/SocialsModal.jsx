@@ -17,25 +17,25 @@ export default function SocialsModal({ onClose }) {
         <div className="modal-links">
           <a
             className="social-link linkedin"
-            href="https://linkedin.com/in/yourprofile"
+            href="https://linkedin.com/in/brycetjones"
             target="_blank"
             rel="noopener noreferrer"
           >
             <span className="social-icon">in</span>
             <span className="social-label">
               <span className="social-service">LinkedIn</span>
-              <span className="social-handle">linkedin.com/in/yourprofile</span>
+              <span className="social-handle">linkedin.com/in/brycetjones</span>
             </span>
             <span className="social-arrow">→</span>
           </a>
           <a
             className="social-link email"
-            href="mailto:yourname@email.com"
+            href="mailto:brycetjones@gmail.com"
           >
             <span className="social-icon">@</span>
             <span className="social-label">
               <span className="social-service">Email</span>
-              <span className="social-handle">yourname@email.com</span>
+              <span className="social-handle">brycetjones@gmail.com</span>
             </span>
             <span className="social-arrow">→</span>
           </a>
