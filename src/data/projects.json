@@ -4,15 +4,22 @@
     "name": "Tokyo Neighborhood Traffic Simulation",
     "tags": ["Network Modeling", "Python", "Visualization"],
     "color": "#E3001B",
-    "description": "As part of a studio with the municipal government of Chiyoda Ward, Tokyo, I proposed several network ",
+    "description": "I was tasked with modeling changes to a neighborhood's road network using SUMO traffic simulation software for a studio with the municipal government of Chiyoda Ward, Tokyo. My team suggested a series of pedestrian upgrades and road diets; we needed to demonstrate how the proposed changes would impact the flow of vehicles and pedestrians. I created two models of the neighborhood's roadways: a base case, representing the network as it is now (extracted from Open Street Maps) and one edited to include our proposed changes. Trips were generated using kernel density estimation based on GPS data obtained from the University of Tokyo. By comparing overall travel times between the two scenarios, I found that the network changes would improve pedestrian flow at very little expense to vehicle traffic.",
     "media": [
       {
-        "type": "placeholder",
-        "caption": "Proposed network map showing restructured routes"
+        "type": "image",
+        "src": "/bancho_vehicle_heatmap.png",
+        "caption": "A heatmap of vehicle flow created using the Python libraries Matplotlib and Contextly"
       },
       {
-        "type": "placeholder",
-        "caption": "Equity analysis heatmap by census tract"
+        "type": "image",
+        "src": "/model.png",
+        "caption": "The study area, fully modeled in SUMO"
+      },
+      {
+        "type": "image",
+        "src":"/ped_volumes.png",
+        "caption": "A heatmap of pedestrian flow created using the Python libraries Matplotlib and Contextly"
       }
     ]
   },
