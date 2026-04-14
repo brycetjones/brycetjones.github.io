@@ -12,7 +12,7 @@ import './Landing.css'
 const CARDS = [
   {
     label: 'RESUME',
-    sublabel: 'Curriculum Vitae',
+    sublabel: 'View as PDF',
     arrowSrc: '/Right.svg',
     arrowClass: 'arrow-img',           // points right → (↗ intent, Right.svg rotated 45° up-right)
     color: '#E3001B',
@@ -30,9 +30,9 @@ const CARDS = [
   },
   {
     label: 'CONNECT',
-    sublabel: 'LinkedIn · Email',
+    sublabel: 'Contact Me',
     arrowSrc: '/Down.svg',
-    arrowClass: 'arrow-img arrow-flip-down',  // Down.svg, rotated 90° CW = pointing down
+    arrowClass: 'arrow-img',  // Down.svg, rotated 90° CW = pointing down
     color: '#00A651',
     type: 'modal',
   },
@@ -54,8 +54,8 @@ export default function Landing() {
             <div className="profile-photo-placeholder">
               <span>TN</span>
             </div>
-            <div className="profile-photo-ring ring-red"></div>
-            <div className="profile-photo-ring ring-blue"></div>
+            <div className="profile-photo-ring ring-inner"></div>
+            <div className="profile-photo-ring ring-outer"></div>
           </div>
 
           <div className="profile-text">
@@ -65,8 +65,8 @@ export default function Landing() {
               <span style={{background:'#D4861A'}}></span>
               <span style={{background:'#00A651'}}></span>
             </div>
-            <h1 className="profile-name">Test Name</h1>
-            <p className="profile-title">Transportation Planner</p>
+            <h1 className="profile-name">Bryce Jones</h1>
+            <p className="profile-title">Planning, Transportation, More</p>
             <p className="profile-bio">
               Graduate of Georgia Tech &amp; Brown University. Passionate about
               designing equitable, data-driven transit systems that connect

@@ -70,13 +70,13 @@
   pointer-events: none;
 }
 
-.ring-red {
+.ring-inner {
   width: 140px;
   height: 140px;
-  border-color: #E3001B;
+  border-color: #D4861A;
 }
 
-.ring-blue {
+.ring-outer {
   width: 158px;
   height: 158px;
   border-color: #0065BD;

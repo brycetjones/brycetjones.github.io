@@ -15,6 +15,16 @@ const PROJECTS = [
   },
   {
     id: 2,
+    name: 'Automated Bus Stop Inventory',
+    tags: ['Machine Learning', 'GTFS', 'Computer Vision', 'Python'],
+    color: '#00A651',
+    thumbnail: null,
+    thumbnailType: 'youtube',
+    youtubeId: '4SQ5h8Bhpro',
+    description: `Most transit agencies lack a comprehensive inventory of which amenities are present at their bus stops (shelters, seating, etc.) On top of this, the bus stop coordinates provided by transit agencies are often erroneous. I developed a system that uses reinforcement learning to actively seek out bus stops through street view imagery, compensating for unreliable coordinate data. Once it has located a stop, the system uses computer vision to automatically determine which amenities are present at the targeted stop. It even locates multiple viewpoints of stops, enabling more accurate coordinates to be estimated through triangulation.`,
+  },
+  {
+    id: 4,
     name: 'Bike-Share Equity Dashboard',
     tags: ['Data Visualization', 'Python', 'Urban Mobility'],
     color: '#0065BD',
@@ -31,16 +41,6 @@ const PROJECTS = [
     thumbnailType: 'pdf',
     thumbnailPdf: '/sample-project.pdf',
     description: `A feasibility study evaluating three alignment alternatives for a proposed high-speed rail corridor connecting two major metropolitan regions. The study encompassed ridership demand modeling, environmental impact screening, ROW cost estimation, and interoperability analysis with existing commuter rail systems.\n\nDelivered as part of a federal planning grant. The preferred alternative was selected based on a weighted multi-criteria analysis balancing capital cost, travel time savings, environmental impacts, and economic development potential.`,
-  },
-  {
-    id: 4,
-    name: 'Transit & Climate Resilience',
-    tags: ['Climate Adaptation', 'Risk Analysis', 'Infrastructure'],
-    color: '#00A651',
-    thumbnail: null,
-    thumbnailType: 'youtube',
-    youtubeId: 'dQw4w9WgXcQ',
-    description: `A research project examining the vulnerability of urban transit infrastructure to climate-induced disruptions including flooding, extreme heat, and wildfire smoke. Using FEMA flood maps, NOAA climate projections, and agency asset data, we scored over 1,200 transit assets by risk exposure and adaptive capacity.\n\nThis work was published as a joint report with a regional planning agency and informed the development of a $40M resilience investment program. The video above features a summary presentation delivered at the National Academy of Sciences.`,
   },
 ]
 
