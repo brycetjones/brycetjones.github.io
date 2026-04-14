@@ -39,14 +39,15 @@
   },
   {
     "id": 3,
-    "name": "(WIP) Rail Transit Resilience to Flooding",
+    "name": "(WIP) Rail Transit Resilience Strategies",
     "tags": ["Transit", "Resilience Planning", "Thesis"],
     "color": "#D4861A",
     "description": "My master's thesis examines how rail transit systems around the world are preparing for more frequent extreme precipitation events and flooding, and what constitutes an effective resilience approach. I conducted interviews with personnel from five different transit agencies, examining how approaches differ and the factors that have enabled the most effective responses.",
     "media": [
       {
-        "type": "placeholder",
-        "caption": " "
+        "type": "image",
+        "src": "/thesis_cover.png",
+        "caption": "A flooded subway station in NYC"
       }
     ]
   },
@@ -75,6 +76,30 @@
         "type": "pdf",
         "src": "/Emissions.pdf",
         "caption": "Created in ArcGIS"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Work for Cooper Carry",
+    "tags": ["ArcGIS", "Illustrator", "InDesign"],
+    "color": "#0065BD",
+    "description": "Maps I produced during my internship with Cooper Carry. I first arranged spatial data in ArcGIS, sometimes manually creating features based on parcel and roadway data. The resulting maps were refined in Adobe Illustrator and InDesign to create aesthetically pleasing graphics that can be understood by a non-technical audience. Each of these graphics were sent to clients as part of final deliverables.",
+    "media": [
+      {
+        "type": "image",
+        "src": "/pww_hydrology.png",
+        "caption": "Used to provide site context for a public client on the Georgia coast. Data from FEMA."
+      },
+      {
+        "type": "image",
+        "src": "/southlake_context.png",
+        "caption": "Map made for a private developer in Texas. Data derived from OpenStreetMap and municipal sources."
+      },
+            {
+        "type": "image",
+        "src": "/pww_transit.png",
+        "caption": "Transit data from various sources"
       }
     ]
   }
