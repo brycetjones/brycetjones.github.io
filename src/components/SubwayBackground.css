@@ -1,0 +1,15 @@
+.subway-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.subway-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}

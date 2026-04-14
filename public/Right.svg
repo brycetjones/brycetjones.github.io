@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Lines" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 245.31 201.71">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #231f20;
+      }
+    </style>
+  </defs>
+  <path class="cls-1" d="M144.75,0l100.56,100.64-100.31,101.07-37.93-37.53,37.14-37.06H0v-53.47h143.22l-35.9-36S144.75.22,144.75,0Z"/>
+</svg>

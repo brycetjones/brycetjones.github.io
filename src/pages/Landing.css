@@ -1,0 +1,242 @@
+.landing {
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.landing-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  padding: 3rem 1.5rem;
+  width: 100%;
+  max-width: 760px;
+}
+
+/* ── PROFILE BLOCK ── */
+.profile-block {
+  background: rgba(255,255,255,0.93);
+  border: 3px solid #1a1a1a;
+  border-radius: 4px;
+  padding: 2.5rem 2.5rem 2.5rem 2rem;
+  display: flex;
+  gap: 2.5rem;
+  align-items: center;
+  box-shadow: 8px 8px 0 #1a1a1a;
+  width: 100%;
+  animation: fadeUp 0.6s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-photo-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.profile-photo-placeholder {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 2;
+}
+
+.profile-photo-ring {
+  position: absolute;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 3px solid transparent;
+  pointer-events: none;
+}
+
+.ring-red {
+  width: 140px;
+  height: 140px;
+  border-color: #E3001B;
+}
+
+.ring-blue {
+  width: 158px;
+  height: 158px;
+  border-color: #0065BD;
+}
+
+.profile-line-tag {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.profile-line-tag span {
+  display: block;
+  width: 22px;
+  height: 7px;
+  border-radius: 4px;
+}
+
+.profile-name {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.profile-title {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: #E3001B;
+  text-transform: uppercase;
+  margin: 8px 0 14px;
+}
+
+.profile-bio {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #444;
+  max-width: 440px;
+}
+
+/* ── SIGN CARDS ── */
+.cards-row {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.7s ease both 0.2s;
+}
+
+.card-wrapper {
+  flex: 1;
+  min-width: 180px;
+  max-width: 240px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: none;
+  display: block;
+}
+
+.sign-card {
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 5px 5px 0 rgba(0,0,0,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #333;
+}
+
+.card-wrapper:hover .sign-card {
+  transform: translate(-3px, -3px);
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.5);
+}
+
+.sign-card-stripe {
+  height: 8px;
+  width: 100%;
+}
+
+.sign-card-body {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 1.4rem 1.2rem 1rem;
+  flex: 1;
+}
+
+/* SVG arrow images from /public */
+.arrow-img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
+  filter: invert(1);
+}
+
+.arrow-flip-down {
+  transform: rotate(90deg);
+}
+
+
+.sign-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.sign-label {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+}
+
+.sign-sublabel {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 0.7rem;
+  color: #aaa;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sign-card-bottom {
+  padding: 0.6rem 1.2rem;
+  display: flex;
+  gap: 5px;
+  border-top: 1px solid #333;
+}
+
+.sign-bullet {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .profile-block {
+    flex-direction: column;
+    text-align: center;
+    align-items: center;
+    padding: 2rem 1.5rem;
+  }
+
+  .profile-line-tag {
+    justify-content: center;
+  }
+
+  .profile-bio {
+    max-width: 100%;
+  }
+}

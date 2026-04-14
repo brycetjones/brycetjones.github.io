@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --mta-red: #E3001B;
+  --mta-blue: #0065BD;
+  --mta-orange: #D4861A;
+  --mta-green: #00A651;
+  --mta-yellow: #FCCC0A;
+  --mta-purple: #8E3A97;
+  --black: #0a0a0a;
+  --white: #ffffff;
+  --sign-bg: #1a1a1a;
+}
+
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Source Sans 3', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #fff;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+}
