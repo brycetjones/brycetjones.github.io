@@ -74,10 +74,10 @@ export default function Landing() {
             <h1 className="profile-name">Bryce Jones</h1>
             <p className="profile-title">Planning, Transportation, More</p>
             <p className="profile-bio">
-              Graduate of Georgia Tech &amp; Brown University. Passionate about
-              designing equitable, data-driven transit systems that connect
-              communities and reduce car dependency. Specializing in multimodal
-              network analysis, transit equity research, and urban mobility planning.
+              Georgia Tech master's student, Brown University graduate. Applying my 
+              background in computer science to the world of planning. Interested 
+              in the intersection of design, data, and transportation. Lover of 
+              trains. 
             </p>
           </div>
         </div>
