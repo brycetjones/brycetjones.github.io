@@ -39,6 +39,19 @@ export default function SocialsModal({ onClose }) {
             </span>
             <span className="social-arrow">→</span>
           </a>
+          <a
+            className="social-link github"
+            href="https://github.com/brycetjones"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="social-icon">git</span>
+            <span className="social-label">
+              <span className="social-service">Github</span>
+              <span className="social-handle">github.com/brycetjones</span>
+            </span>
+            <span className="social-arrow">→</span>
+          </a>
         </div>
       </div>
     </div>

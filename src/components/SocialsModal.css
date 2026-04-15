@@ -91,7 +91,8 @@
 }
 
 .linkedin { background: #0A66C2; border-left-color: #fff; }
-.email { background: #D4861A; border-left-color: #fff; }
+.email { background: #E3001B; border-left-color: #fff; }
+.github { background: #D4861A; border-left-color: #fff; }
 
 .social-icon {
   color: white;
