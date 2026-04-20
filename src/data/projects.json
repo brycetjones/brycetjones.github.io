@@ -53,34 +53,6 @@
   },
   {
     "id": 4,
-    "name": "Rainwater Runoff Study",
-    "tags": ["ArcGIS", "Coursework", "Machine Learning"],
-    "color": "#00A651",
-    "description": "I used ArcGIS to determine how different development types (suburban vs. urban) in the Atlanta area impact rainwater runoff. I first determined groundcover type (foliage vs. impermeable surfaces) per parcel using machine learning tools applied to satellite imagery. Given that plants absorb infrared at a higher rate than their surroundings, the infrared band of satellite imagery can be used to determine which pixels contain foliage. The groundcover ratio was then used to estimate surface runoff.",
-    "media": [
-      {
-        "type": "pdf",
-        "src": "/Runoff.pdf",
-        "caption": "Created in ArcGIS"
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "Emissions Modeling",
-    "tags": ["ArcGIS", "Resilience Planning", "Coursework"],
-    "color": "#E3001B",
-    "description": "I used a pollutant dispersion model provided by the EPA to gauge the area impacted by a coal-burning powerplant. The results were cross-referenced with census data to conduct an analysis on which demographics were most impacted by the fallout, such those designated as disadvantaged.",
-    "media": [
-      {
-        "type": "pdf",
-        "src": "/Emissions.pdf",
-        "caption": "Created in ArcGIS"
-      }
-    ]
-  },
-  {
-    "id": 6,
     "name": "Work for Cooper Carry",
     "tags": ["ArcGIS", "Illustrator", "InDesign"],
     "color": "#0065BD",
@@ -99,7 +71,35 @@
             {
         "type": "image",
         "src": "/pww_transit.png",
-        "caption": "Transit data from various sources"
+        "caption": "Transit data from municipal soruces."
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Rainwater Runoff Study",
+    "tags": ["ArcGIS", "Coursework", "Machine Learning"],
+    "color": "#00A651",
+    "description": "I used ArcGIS to determine how different development types (suburban vs. urban) in the Atlanta area impact rainwater runoff. I first determined groundcover type (foliage vs. impermeable surfaces) per parcel using machine learning tools applied to satellite imagery. Given that plants absorb infrared at a higher rate than their surroundings, the infrared band of satellite imagery can be used to determine which pixels contain foliage. The groundcover ratio was then used to estimate surface runoff.",
+    "media": [
+      {
+        "type": "pdf",
+        "src": "/Runoff.pdf",
+        "caption": "Created in ArcGIS"
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Emissions Modeling",
+    "tags": ["ArcGIS", "Resilience Planning", "Coursework"],
+    "color": "#E3001B",
+    "description": "I used a pollutant dispersion model provided by the EPA to gauge the area impacted by a coal-burning powerplant. The results were cross-referenced with census data to conduct an analysis on which demographics were most impacted by the fallout, such those designated as disadvantaged.",
+    "media": [
+      {
+        "type": "pdf",
+        "src": "/Emissions.pdf",
+        "caption": "Created in ArcGIS"
       }
     ]
   }
