@@ -39,24 +39,10 @@
   },
   {
     "id": 3,
-    "name": "(WIP) Rail Transit Resilience Strategies",
-    "tags": ["Transit", "Resilience Planning", "Thesis"],
-    "color": "#D4861A",
-    "description": "My master's thesis examines how rail transit systems around the world are preparing for more frequent extreme precipitation events and flooding, and what constitutes an effective resilience approach. I conducted interviews with personnel from five different transit agencies, examining how approaches differ and the factors that have enabled the most effective responses.",
-    "media": [
-      {
-        "type": "image",
-        "src": "/thesis_cover.png",
-        "caption": "A flooded subway station in NYC"
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "Work for Cooper Carry",
+    "name": "Graphics & Maps from Cooper Carry Internship",
     "tags": ["ArcGIS", "Illustrator", "InDesign"],
-    "color": "#0065BD",
-    "description": "Maps I produced during my internship with Cooper Carry. I first arranged spatial data in ArcGIS, sometimes manually creating features based on parcel and roadway data. The resulting maps were refined in Adobe Illustrator and InDesign to create aesthetically pleasing graphics that can be understood by a non-technical audience. Each of these graphics were sent to clients as part of final deliverables.",
+    "color": "#D4861A",
+    "description": "Maps I produced during my internship with the urban planning studio at Cooper Carry. I first arranged spatial data in ArcGIS, sometimes manually creating features based on parcel and roadway data. The resulting maps were refined in Adobe Illustrator and InDesign to create aesthetically pleasing graphics that can be understood by a non-technical audience. Each of these graphics were sent to clients as part of final deliverables.",
     "media": [
       {
         "type": "image",
@@ -76,10 +62,24 @@
     ]
   },
   {
+    "id": 4,
+    "name": "Thesis: Rail Transit Resilience Strategies",
+    "tags": ["Transit", "Resilience Planning", "Thesis"],
+    "color": "#00A651",
+    "description": "My master's thesis examines how rail transit systems around the world are preparing for more frequent extreme precipitation events and flooding, and what constitutes an effective resilience approach. I conducted interviews with personnel from five different transit agencies, examining how approaches differ and the factors that have enabled the most effective responses.",
+    "media": [
+      {
+        "type": "image",
+        "src": "/thesis_cover.png",
+        "caption": "A flooded subway station in NYC"
+      }
+    ]
+  },
+  {
     "id": 5,
     "name": "Rainwater Runoff Study",
     "tags": ["ArcGIS", "Coursework", "Machine Learning"],
-    "color": "#00A651",
+    "color": "#E3001B",
     "description": "I used ArcGIS to determine how different development types (suburban vs. urban) in the Atlanta area impact rainwater runoff. I first determined groundcover type (foliage vs. impermeable surfaces) per parcel using machine learning tools applied to satellite imagery. Given that plants absorb infrared at a higher rate than their surroundings, the infrared band of satellite imagery can be used to determine which pixels contain foliage. The groundcover ratio was then used to estimate surface runoff.",
     "media": [
       {
@@ -93,7 +93,7 @@
     "id": 6,
     "name": "Emissions Modeling",
     "tags": ["ArcGIS", "Resilience Planning", "Coursework"],
-    "color": "#E3001B",
+    "color": "#0065BD",
     "description": "I used a pollutant dispersion model provided by the EPA to gauge the area impacted by a coal-burning powerplant. The results were cross-referenced with census data to conduct an analysis on which demographics were most impacted by the fallout, such those designated as disadvantaged.",
     "media": [
       {

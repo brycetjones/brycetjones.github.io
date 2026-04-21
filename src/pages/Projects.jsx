@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import NavBar from '../components/NavBar'
 import SubwayBackground from '../components/SubwayBackground'
 import PROJECTS from '../data/projects.json'
@@ -77,10 +77,50 @@ function MediaItem({ item, color, name }) {
   if (item.type === 'pdf') {
     return <PdfMedia src={item.src} />
   }
-  // placeholder
   return (
     <div className="media-placeholder" style={{ background: color + '18', borderColor: color }}>
       <span style={{ color }}>{name.charAt(0)}</span>
+    </div>
+  )
+}
+
+// ─── FULLSCREEN OVERLAY ─────────────────────────────────────
+function FullscreenOverlay({ item, color, name, caption, onClose }) {
+  // Close on Escape key
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', handler)
+    // Lock body scroll while open
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', handler)
+      document.body.style.overflow = ''
+    }
+  }, [onClose])
+
+  return (
+    <div
+      className="fs-overlay"
+      onClick={onClose}          // click outside image closes
+      role="dialog"
+      aria-modal="true"
+      aria-label="Fullscreen media"
+    >
+      <div
+        className="fs-content"
+        onClick={e => e.stopPropagation()}  // clicks inside don't bubble to overlay
+      >
+        {/* Close / shrink button */}
+        <button className="fs-close-btn" onClick={onClose} aria-label="Exit fullscreen">
+          <img src="/fullscreen.png" alt="" className="fs-icon" />
+        </button>
+
+        <div className="fs-media">
+          <MediaItem item={item} color={color} name={name} />
+        </div>
+
+        {caption && <p className="fs-caption">{caption}</p>}
+      </div>
     </div>
   )
 }
@@ -93,7 +133,6 @@ function Thumbnail({ project }) {
       <span style={{ color: project.color }}>{project.name.charAt(0)}</span>
     </div>
   )
-
   if (first.type === 'youtube') {
     return (
       <div className="thumb-youtube-wrap">
@@ -110,11 +149,7 @@ function Thumbnail({ project }) {
     return <img src={first.src} alt={first.caption || project.name} className="thumb-img" />
   }
   if (first.type === 'pdf') {
-    return (
-      <div className="thumb-placeholder pdf-placeholder">
-        <span>PDF</span>
-      </div>
-    )
+    return <div className="thumb-placeholder pdf-placeholder"><span>PDF</span></div>
   }
   return (
     <div className="thumb-placeholder" style={{ background: project.color + '22', borderColor: project.color }}>
@@ -124,62 +159,94 @@ function Thumbnail({ project }) {
 }
 
 // ─── CAROUSEL ───────────────────────────────────────────────
+// The fullscreen button is overlaid onto the carousel-media area.
+// It is NOT shown for youtube items (YouTube has its own fullscreen)
+// or placeholder items (nothing meaningful to fullscreen).
+const FULLSCREENABLE = ['image', 'pdf']
+
 function Carousel({ project }) {
   const media = project.media || []
   const [idx, setIdx] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   if (media.length === 0) return null
 
   const prev = () => setIdx(i => (i - 1 + media.length) % media.length)
   const next = () => setIdx(i => (i + 1) % media.length)
   const current = media[idx]
+  const canFullscreen = FULLSCREENABLE.includes(current.type)
+
+  const openFullscreen  = useCallback(() => setIsFullscreen(true),  [])
+  const closeFullscreen = useCallback(() => setIsFullscreen(false), [])
 
   return (
-    <div className="carousel">
-      <div className="carousel-media">
-        <MediaItem item={current} color={project.color} name={project.name} />
-      </div>
-
-      {/* Caption */}
-      {current.caption && (
-        <p className="carousel-caption">{current.caption}</p>
+    <>
+      {isFullscreen && (
+        <FullscreenOverlay
+          item={current}
+          color={project.color}
+          name={project.name}
+          caption={current.caption}
+          onClose={closeFullscreen}
+        />
       )}
 
-      {/* Controls — only show if more than one item */}
-      {media.length > 1 && (
-        <div className="carousel-controls">
-          <button
-            className="carousel-btn carousel-btn-prev"
-            onClick={prev}
-            aria-label="Previous"
-            style={{ '--btn-color': project.color }}
-          >
-            <img src="/Right.svg" alt="Previous" className="carousel-arrow-img carousel-arrow-flip" />
-          </button>
+      <div className="carousel">
+        {/* Media area with fullscreen button overlaid */}
+        <div className="carousel-media">
+          <MediaItem item={current} color={project.color} name={project.name} />
 
-          <div className="carousel-dots">
-            {media.map((_, i) => (
-              <button
-                key={i}
-                className={`carousel-dot ${i === idx ? 'active' : ''}`}
-                style={{ '--dot-color': project.color }}
-                onClick={() => setIdx(i)}
-                aria-label={`Go to item ${i + 1}`}
-              />
-            ))}
-          </div>
-
-          <button
-            className="carousel-btn carousel-btn-next"
-            onClick={next}
-            aria-label="Next"
-            style={{ '--btn-color': project.color }}
-          >
-            <img src="/Right.svg" alt="Next" className="carousel-arrow-img" />
-          </button>
+          {canFullscreen && (
+            <button
+              className="carousel-fs-btn"
+              onClick={openFullscreen}
+              aria-label="View fullscreen"
+              title="View fullscreen"
+            >
+              <img src="/fullscreen.png" alt="" className="carousel-fs-icon" />
+            </button>
+          )}
         </div>
-      )}
-    </div>
+
+        {current.caption && (
+          <p className="carousel-caption">{current.caption}</p>
+        )}
+
+        {media.length > 1 && (
+          <div className="carousel-controls">
+            <button
+              className="carousel-btn carousel-btn-prev"
+              onClick={prev}
+              aria-label="Previous"
+              style={{ '--btn-color': project.color }}
+            >
+              <img src="/Right.svg" alt="Previous" className="carousel-arrow-img carousel-arrow-flip" />
+            </button>
+
+            <div className="carousel-dots">
+              {media.map((_, i) => (
+                <button
+                  key={i}
+                  className={`carousel-dot ${i === idx ? 'active' : ''}`}
+                  style={{ '--dot-color': project.color }}
+                  onClick={() => setIdx(i)}
+                  aria-label={`Go to item ${i + 1}`}
+                />
+              ))}
+            </div>
+
+            <button
+              className="carousel-btn carousel-btn-next"
+              onClick={next}
+              aria-label="Next"
+              style={{ '--btn-color': project.color }}
+            >
+              <img src="/Right.svg" alt="Next" className="carousel-arrow-img" />
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   )
 }
 
@@ -193,7 +260,6 @@ function ProjectCard({ project }) {
       className={`project-card ${expanded ? 'expanded' : ''}`}
       style={{ '--card-accent': project.color }}
     >
-      {/* Preview row */}
       <button
         className="project-preview"
         onClick={() => setExpanded(e => !e)}
@@ -219,7 +285,6 @@ function ProjectCard({ project }) {
         </div>
       </button>
 
-      {/* Expanded body */}
       <div
         ref={bodyRef}
         className="project-expanded-body"
