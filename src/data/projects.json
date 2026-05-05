@@ -57,7 +57,31 @@
             {
         "type": "image",
         "src": "/pww_transit.png",
-        "caption": "Transit data from municipal soruces."
+        "caption": "Transit data from municipal sources."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "ULI Hines Contest Submission (Writing Sample)",
+    "tags": ["Writing Sample", "Illustrator", "InDesign"],
+    "color": "#D4861A",
+    "description": "Selections from my team's entry for the 2024 ULI Hines competition. As the team's city planner, I conducted site analysis using ArcGIS, wrote the narrative, and assisted with graphics using Illustrator and InDesign.",
+    "media": [
+      {
+        "type": "pdf",
+        "src": "/uli_narrative.pdf",
+        "caption": "Final narrative."
+      },
+      {
+        "type": "pdf",
+        "src": "/uli_slide_2.pdf",
+        "caption": "A slide I assisted with."
+      },
+            {
+        "type": "pdf",
+        "src": "/uli_slide.pdf",
+        "caption": "A slide I assisted with."
       }
     ]
   },
