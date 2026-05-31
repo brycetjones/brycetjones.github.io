@@ -85,41 +85,77 @@ function MediaItem({ item, color, name }) {
 }
 
 // ─── FULLSCREEN OVERLAY ─────────────────────────────────────
-function FullscreenOverlay({ item, color, name, caption, onClose }) {
-  // Close on Escape key
+function FullscreenOverlay({ media, startIdx, color, name, onClose }) {
+  const [idx, setIdx] = useState(startIdx)
+  const current = media[idx]
+  const multi = media.length > 1
+
+  const prev = useCallback(() => setIdx(i => (i - 1 + media.length) % media.length), [media.length])
+  const next = useCallback(() => setIdx(i => (i + 1) % media.length), [media.length])
+
   useEffect(() => {
-    const handler = (e) => { if (e.key === 'Escape') onClose() }
+    const handler = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft')  prev()
+      if (e.key === 'ArrowRight') next()
+    }
     window.addEventListener('keydown', handler)
-    // Lock body scroll while open
     document.body.style.overflow = 'hidden'
     return () => {
       window.removeEventListener('keydown', handler)
       document.body.style.overflow = ''
     }
-  }, [onClose])
+  }, [onClose, prev, next])
 
   return (
     <div
       className="fs-overlay"
-      onClick={onClose}          // click outside image closes
+      onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-label="Fullscreen media"
     >
       <div
         className="fs-content"
-        onClick={e => e.stopPropagation()}  // clicks inside don't bubble to overlay
+        onClick={e => e.stopPropagation()}
       >
-        {/* Close / shrink button */}
         <button className="fs-close-btn" onClick={onClose} aria-label="Exit fullscreen">
           <img src="/fullscreen.png" alt="" className="fs-icon" />
         </button>
 
-        <div className="fs-media">
-          <MediaItem item={item} color={color} name={name} />
+        <div className="fs-media-row">
+          {multi && (
+            <button className="fs-nav-btn fs-nav-prev" onClick={prev} aria-label="Previous">
+              <img src="/Right.svg" alt="Previous" className="fs-nav-arrow fs-nav-arrow-flip" />
+            </button>
+          )}
+
+          <div className="fs-media">
+            <MediaItem item={current} color={color} name={name} />
+          </div>
+
+          {multi && (
+            <button className="fs-nav-btn fs-nav-next" onClick={next} aria-label="Next">
+              <img src="/Right.svg" alt="Next" className="fs-nav-arrow" />
+            </button>
+          )}
         </div>
 
-        {caption && <p className="fs-caption">{caption}</p>}
+        {current.caption && <p className="fs-caption">{current.caption}</p>}
+
+        {multi && (
+          <div className="fs-dots">
+            {media.map((_, i) => (
+              <button
+                key={i}
+                className={`carousel-dot ${i === idx ? 'active' : ''}`}
+                style={{ '--dot-color': color }}
+                onClick={() => setIdx(i)}
+                aria-label={`Go to item ${i + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -183,10 +219,10 @@ function Carousel({ project }) {
     <>
       {isFullscreen && (
         <FullscreenOverlay
-          item={current}
+          media={media}
+          startIdx={idx}
           color={project.color}
           name={project.name}
-          caption={current.caption}
           onClose={closeFullscreen}
         />
       )}

@@ -619,6 +619,48 @@
   object-fit: contain;
 }
 
+.fs-media-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.fs-nav-btn {
+  background: rgba(255,255,255,0.12);
+  border: none;
+  border-radius: 4px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.fs-nav-btn:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+.fs-nav-arrow {
+  width: 22px;
+  height: 22px;
+  display: block;
+  filter: invert(1);
+  pointer-events: none;
+}
+
+.fs-nav-arrow-flip {
+  transform: scaleX(-1);
+}
+
+.fs-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .fs-caption {
   margin-top: 10px;
   color: rgba(255,255,255,0.7);
